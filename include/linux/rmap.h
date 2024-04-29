@@ -12,8 +12,14 @@
 
 extern int isolate_lru_page(struct page *page);
 extern void putback_lru_page(struct page *page);
+#ifdef CONFIG_PROCESS_RECLAIM_ENHANCE
+/* record the scaned task*/
 extern unsigned long reclaim_pages_from_list(struct list_head *page_list,
-					     struct vm_area_struct *vma);
+			struct vm_area_struct *vma, struct mm_walk *walk);
+#else
+extern unsigned long reclaim_pages_from_list(struct list_head *page_list,
+					struct vm_area_struct *vma);
+#endif
 
 /*
  * The anon_vma heads a list of private "related" vmas, to scan if
@@ -40,6 +46,14 @@ struct anon_vma {
 	 * anon_vma if they are the last user on release
 	 */
 	atomic_t refcount;
+
+	/*
+	 * Count of child anon_vmas and VMAs which points to this anon_vma.
+	 *
+	 * This counter is used for making decision about reusing anon_vma
+	 * instead of forking new one. See comments in function anon_vma_clone.
+	 */
+	unsigned degree;
 
 	/*
 	 * Count of child anon_vmas. Equals to the count of all anon_vmas that

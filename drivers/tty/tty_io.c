@@ -2635,7 +2635,6 @@ static int tiocspgrp(struct tty_struct *tty, struct tty_struct *real_tty, pid_t 
 		return -ENOTTY;
 	if (retval)
 		return retval;
-
 	if (get_user(pgrp_nr, p))
 		return -EFAULT;
 	if (pgrp_nr < 0)
@@ -3116,7 +3115,7 @@ void __do_SAK(struct tty_struct *tty)
 	struct task_struct *g, *p;
 	struct pid *session;
 	int		i;
-	unsigned long flags;
+        unsigned long flags;
 
 	if (!tty)
 		return;
@@ -3155,7 +3154,7 @@ void __do_SAK(struct tty_struct *tty)
 		task_unlock(p);
 	} while_each_thread(g, p);
 	read_unlock(&tasklist_lock);
-	put_pid(session);
+        put_pid(session);
 #endif
 }
 

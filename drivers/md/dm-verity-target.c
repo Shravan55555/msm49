@@ -69,13 +69,14 @@ struct dm_verity_prefetch_work {
 struct buffer_aux {
 	int hash_verified;
 };
+
 /*
  * While system shutdown, skip verity work for I/O error.
  */
 static inline bool verity_is_system_shutting_down(void)
 {
 	return system_state == SYSTEM_HALT || system_state == SYSTEM_POWER_OFF
-		|| system_state == SYSTEM_RESTART;
+	|| system_state == SYSTEM_RESTART;
 }
 
 /*
@@ -253,7 +254,12 @@ out:
 #ifdef CONFIG_DM_VERITY_AVB
 		dm_verity_avb_error_handler();
 #endif
+
+#ifdef OPLUS_BUG_STABILITY
+		panic("dm-verity device corrupted");
+#else
 		kernel_restart("dm-verity device corrupted");
+#endif /* OPLUS_BUG_STABILITY */
 	}
 
 	if (v->mode == DM_VERITY_MODE_EIO) {
